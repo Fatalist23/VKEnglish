@@ -105,7 +105,7 @@ namespace VKEng
         }
     public class vk
     {
-        private string MyAppToken => "1aa508fa46aaa32670c3bd58863fc2d796b694a2b186a9c2866942523da8a984b82f9eac45f161e91c04e";
+        private string MyAppToken => "";
         private VkApi api;
         public long? user;
         public string NameOfUnit;
