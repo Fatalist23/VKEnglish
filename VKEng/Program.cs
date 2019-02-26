@@ -20,7 +20,7 @@ namespace VKEng
             static void Main(string[] args)
             {
                 string[] unit = { "unit1", "unit2", "unit3" };
-                int IndexOfStudent = 0;
+                var IndexOfStudent = 0;
                 while (true)
                 {
                     try
@@ -57,12 +57,12 @@ namespace VKEng
             static void English(object obj)
             {
                 vk vkEng = (vk)obj;
-                int error = 0;
+                var error = 0;
                 string[] db;
                 db = File.ReadAllLines(vkEng.NameOfUnit + ".txt", Encoding.UTF8);
                 Dictionary<string, string> words = new Dictionary<string, string>(db.Length / 2);
                 string[] Words = new string[db.Length / 2];
-                int WordId = new Random().Next(0, db.Length / 2);
+                var WordId = new Random().Next(0, db.Length / 2);
                 for (int i = 0, k = 0; i < db.Length; i++, k++)
                 {
                     Words[k] = db[i];
