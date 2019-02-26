@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Text;
 using VkNet;
 using VkNet.Model;
@@ -7,6 +8,7 @@ using VkNet.Model.RequestParams;
 using VkNet.Enums.SafetyEnums;
 using System.IO;
 using System.Threading;
+using VkNet.Model.Keyboard;
 
 namespace VKEng
 {
@@ -46,10 +48,13 @@ namespace VKEng
                             newThread.Start(student[IndexOfStudent]);
                             IndexOfStudent++;
                         }
+
+                       
+
                     }
                     catch (Exception e)
                     {
-                        throw  new Exception("пошел нахуй");
+                        //throw  new Exception("Error");
                     }
                 }
             }
@@ -91,6 +96,7 @@ namespace VKEng
                             error++;
                             if (error != 2)
                                 vkEng.SendMessage("Неверно &#10060; , попробуй еще раз:)\nОсталось попыток:" + (2 - error));
+                            
                             if (error == 2)
                             {
                                 vkEng.SendMessage("Правильный ответ: " + words[Words[WordId]] + "\nПопробуй следующее!");
@@ -105,7 +111,7 @@ namespace VKEng
         }
     public class vk
     {
-        private string MyAppToken => "";
+        private string MyAppToken => "1aa508fa46aaa32670c3bd58863fc2d796b694a2b186a9c2866942523da8a984b82f9eac45f161e91c04e";
         private VkApi api;
         public long? user;
         public string NameOfUnit;
@@ -114,6 +120,7 @@ namespace VKEng
         public vk()
         {
             api = new VkApi();
+            
             api.Authorize(new ApiAuthParams() { AccessToken = MyAppToken });
             user = 0;
             NameOfUnit = null;
@@ -131,7 +138,19 @@ namespace VKEng
 
         public void SendMessage(string Text)
         {
-            api.Messages.Send(new MessagesSendParams { UserId = user, Message = Text, RandomId = new Random().Next(100, 1000000000) });
+          
+           
+                MessageKeyboard board = new MessageKeyboard();
+
+                KeyboardBuilder ss = new KeyboardBuilder();
+                ss.AddButton("unit1","Extra1");
+                ss.AddButton("unit2", "Extra2");
+                ss.AddButton("unit3", "Extra3");
+                ss.SetOneTime();
+            board = ss.Build();
+            if (board != null)
+                api.Messages.Send(new MessagesSendParams { UserId = user, Message = Text, Keyboard = board, RandomId = new Random().Next(100, 1000000000) });
+
         }
 
         public string GetLastMessageText(string Filter)
