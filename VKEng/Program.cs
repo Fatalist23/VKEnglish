@@ -63,17 +63,36 @@ namespace VKEng
             {
                 vk vkEng = (vk)obj;
                 var error = 0;
-                string[] db;
-                db = File.ReadAllLines(vkEng.NameOfUnit + ".txt", Encoding.UTF8);
+
+                string[] db = File.ReadAllLines(vkEng.NameOfUnit + ".txt", Encoding.UTF8);
                 Dictionary<string, string> words = new Dictionary<string, string>(db.Length / 2);
-                string[] Words = new string[db.Length / 2];
                 var WordId = new Random().Next(0, db.Length / 2);
+
+                var Words = ArrayFill(vkEng,words,db);
+
+                vkEng.SendMessage(Words[WordId]);
+
+                MessageCircle(vkEng,words,WordId,Words,error,obj);
+               
+            }
+
+            private static string[] ArrayFill(vk vkEng, Dictionary<string, string> words, string[] db)
+            {
+                
+                
+                string[] Words = new string[db.Length / 2];
+                
                 for (int i = 0, k = 0; i < db.Length; i++, k++)
                 {
                     Words[k] = db[i];
                     words.Add(db[i], db[++i]);
                 }
-                vkEng.SendMessage(Words[WordId]);
+
+                return Words;
+            }
+
+            private static void MessageCircle(vk vkEng, Dictionary<string, string> words, int WordId,string[] Words,int error,object obj)
+            {
                 while (true)
                 {
                     try
@@ -96,7 +115,7 @@ namespace VKEng
                             error++;
                             if (error != 2)
                                 vkEng.SendMessage("Неверно &#10060; , попробуй еще раз:)\nОсталось попыток:" + (2 - error));
-                            
+
                             if (error == 2)
                             {
                                 vkEng.SendMessage("Правильный ответ: " + words[Words[WordId]] + "\nПопробуй следующее!");
@@ -107,12 +126,12 @@ namespace VKEng
                     }
                     catch (Exception e) { }
                 }
-            }
+        }
         }
     public class vk
     {
-        private string MyAppToken => "1aa508fa46aaa32670c3bd58863fc2d796b694a2b186a9c2866942523da8a984b82f9eac45f161e91c04e";
-        private VkApi api;
+        private static string MyAppToken => "1aa508fa46aaa32670c3bd58863fc2d796b694a2b186a9c2866942523da8a984b82f9eac45f161e91c04e";
+        private readonly VkApi api;
         public long? user;
         public string NameOfUnit;
         public int IndexOfUser;
@@ -153,6 +172,10 @@ namespace VKEng
 
         }
 
+        public void SendKeyboard(string Text)
+        {
+
+        }
         public string GetLastMessageText(string Filter)
         {
             var ListMessage = ListOfMessage(Filter);
