@@ -36,13 +36,13 @@ namespace VKEng
                             newThread = new Thread(new ParameterizedThreadStart(English));
                             student[IndexOfStudent]
                                 .SendMessage(
-                                    "Начинаем!\nНе забывайте писать to в глаголах!\nВыберите слова, которые будете учить!\nДоступные варианты:\nunit1\nunit2\nunit3");
+                                    "Начинаем!\nНе забывайте писать to в глаголах!\nВыберите слова, которые будете учить!\nДоступные варианты:\nunit1\nunit2\nunit3",student[IndexOfStudent].GenerateChooseKeyboard());
                             while (Array.IndexOf(unit, student[IndexOfStudent].NameOfUnit) == -1)
                             {
                                 student[IndexOfStudent].NameOfUnit =
                                     student[IndexOfStudent].GetLastMessageText("Unanswered").ToLower();
                                 if (Array.IndexOf(unit, student[IndexOfStudent].NameOfUnit) == -1)
-                                    student[IndexOfStudent].SendMessage("Такого раздела нет, попробуйте еще раз!");
+                                    student[IndexOfStudent].SendMessage("Такого раздела нет, попробуйте еще раз!", student[IndexOfStudent].GenerateChooseKeyboard());
                             }
 
                             newThread.Start(student[IndexOfStudent]);
@@ -70,7 +70,7 @@ namespace VKEng
 
                 var Words = ArrayFill(vkEng,words,db);
 
-                vkEng.SendMessage(Words[WordId]);
+                vkEng.SendMessage(Words[WordId],vkEng.GenerateKeyboard(words[Words[WordId]]));
 
                 MessageCircle(vkEng,words,WordId,Words,error,obj);
                
@@ -100,13 +100,13 @@ namespace VKEng
                         string Message = vkEng.GetLastMessageText("Unanswered").ToLower();
                         if (Message == words[Words[WordId]])
                         {
-                            vkEng.SendMessage("Молодец,попробуй следущее &#9989;");
+                            vkEng.SendMessage("Молодец,попробуй следущее &#9989;",null);
                             English(obj);
                             break;
                         }
                         else if (Message == "стоп")
                         {
-                            vkEng.SendMessage("Игра остановлена");
+                            vkEng.SendMessage("Игра остановлена",null);
                             userid[vkEng.IndexOfUser] = 0;
                             break;
                         }
@@ -114,11 +114,11 @@ namespace VKEng
                         {
                             error++;
                             if (error != 2)
-                                vkEng.SendMessage("Неверно &#10060; , попробуй еще раз:)\nОсталось попыток:" + (2 - error));
+                                vkEng.SendMessage("Неверно &#10060; , попробуй еще раз:)\nОсталось попыток:" + (2 - error),vkEng.GenerateKeyboard(words[Words[WordId]]));
 
                             if (error == 2)
                             {
-                                vkEng.SendMessage("Правильный ответ: " + words[Words[WordId]] + "\nПопробуй следующее!");
+                                vkEng.SendMessage("Правильный ответ: " + words[Words[WordId]] + "\nПопробуй следующее!",null);
                                 English(obj);
                                 break;
                             }
@@ -155,26 +155,40 @@ namespace VKEng
             return ListMessage.Items[0].LastMessage.Text;
         }
 
-        public void SendMessage(string Text)
+        public void SendMessage(string Text,MessageKeyboard KeyBoard)
         {
           
-           
-                MessageKeyboard board = new MessageKeyboard();
-
-                KeyboardBuilder ss = new KeyboardBuilder();
-                ss.AddButton("unit1","Extra1");
-                ss.AddButton("unit2", "Extra2");
-                ss.AddButton("unit3", "Extra3");
-                ss.SetOneTime();
-            board = ss.Build();
-            if (board != null)
-                api.Messages.Send(new MessagesSendParams { UserId = user, Message = Text, Keyboard = board, RandomId = new Random().Next(100, 1000000000) });
-
+            if (KeyBoard != null)
+                api.Messages.Send(new MessagesSendParams { UserId = user, Message = Text, Keyboard = KeyBoard, RandomId = new Random().Next(100, 1000000000) });
+            else
+                api.Messages.Send(new MessagesSendParams { UserId = user, Message = Text, RandomId = new Random().Next(100, 1000000000) });
         }
 
         public void SendKeyboard(string Text)
         {
 
+        }
+
+        public MessageKeyboard GenerateKeyboard(string Answer)
+        {
+            KeyboardBuilder Builder = new KeyboardBuilder(true);
+            Builder.AddButton(Answer, "True");
+            Builder.AddButton("pennis", "?");
+            MessageKeyboard Board = Builder.Build();
+
+
+            return Board;
+        }
+        public MessageKeyboard GenerateChooseKeyboard()
+        {
+            KeyboardBuilder Builder = new KeyboardBuilder(true);
+            Builder.AddButton("unit1", "?");
+            Builder.AddButton("unit2", "??");
+            Builder.AddButton("unit3", "???");
+            MessageKeyboard Board = Builder.Build();
+
+
+            return Board;
         }
         public string GetLastMessageText(string Filter)
         {
